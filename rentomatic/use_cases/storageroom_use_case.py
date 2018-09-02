@@ -1,4 +1,4 @@
-from rentomatic.shared import response_object as ro
+from rentomatic.shared import response_object as res
 
 
 class StorageRoomListUseCase(object):
@@ -7,5 +7,5 @@ class StorageRoomListUseCase(object):
         self.repo = repo
 
     def execute(self, request_object):
-        storage_rooms = self.repo.list()
-        return ro.ResponseSuccess(storage_rooms)
+        storage_rooms = self.repo.list(filters=request_object.filters)
+        return res.ResponseSuccess(storage_rooms)
