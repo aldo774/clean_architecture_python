@@ -72,3 +72,34 @@ def test_storageroom_list_with_filters(domain_storagerooms):
     assert bool(response_object) is True
     repo.list.assert_called_with(filters=qry_filters)
     assert response_object.value == domain_storagerooms
+
+
+def test_storageroom_list_handles_generic_error():
+    repo = mock.Mock()
+    repo.list.side_effect = Exception('Just an error message')
+
+    storageroom_list_use_case = uc.StorageRoomListUseCase(repo)
+    request_object = req.StorageRoomListRequestObject.from_dict({})
+
+    response_object = storageroom_list_use_case.execute(request_object)
+
+    assert bool(response_object) is False
+    assert response_object.value == {
+        'type': res.ResponseFailure.SYSTEM_ERROR,
+        'message': "Exception: Just an error message"
+    }
+
+
+def test_storageroom_list_handles_bad_request():
+    repo = mock.Mock()
+
+    storageroom_list_use_case = uc.StorageRoomListUseCase(repo)
+    request_object = req.StorageRoomListRequestObject.from_dict({'filters': 5})
+
+    response_object = storageroom_list_use_case.execute(request_object)
+
+    assert bool(response_object) is False
+    assert response_object.value == {
+        'type': res.ResponseFailure.PARAMETERS_ERROR,
+        'message': "filters: Is not iterable"
+    }
