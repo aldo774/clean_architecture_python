@@ -70,3 +70,27 @@ def test_response_failure_from_invalid_request_object_with_errors():
     assert bool(response) is False
     assert response.type == res.ResponseFailure.PARAMETERS_ERROR
     assert response.message == "path: Is mandatory\npath: can't be blank"
+
+
+def test_response_failure_build_resource_error():
+    response = res.ResponseFailure.build_resource_error("test message")
+
+    assert bool(response) is False
+    assert response.type == res.ResponseFailure.RESOURCE_ERROR
+    assert response.message == "test message"
+
+
+def test_response_failure_build_parameters_error():
+    response = res.ResponseFailure.build_parameters_error("test message")
+
+    assert bool(response) is False
+    assert response.type == res.ResponseFailure.PARAMETERS_ERROR
+    assert response.message == "test message"
+
+
+def test_response_failure_build_system_error():
+    response = res.ResponseFailure.build_system_error("test message")
+
+    assert bool(response) is False
+    assert response.type == res.ResponseFailure.SYSTEM_ERROR
+    assert response.message == "test message"
