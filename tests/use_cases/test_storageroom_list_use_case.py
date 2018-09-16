@@ -3,7 +3,7 @@ from unittest import mock
 
 from rentomatic.domain.storageroom import StorageRoom
 from rentomatic.shared import response_object as res
-from rentomatic.use_cases import request_objects as req
+from rentomatic.shared import request_object as req
 from rentomatic.use_cases import storageroom_use_case as uc
 
 

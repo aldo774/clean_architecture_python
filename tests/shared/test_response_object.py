@@ -1,7 +1,7 @@
 import pytest
 
 from rentomatic.shared import response_object as res
-from rentomatic.use_cases import request_objects as req
+from rentomatic.shared import request_object as req
 
 
 @pytest.fixture
