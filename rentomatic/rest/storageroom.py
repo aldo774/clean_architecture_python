@@ -1,10 +1,20 @@
 import json
-from flask import Blueprint, Response
+from flask import Blueprint, request, Response
 
 from rentomatic.shared import request_object as req
+from rentomatic.shared import response_object as res
 from rentomatic.repository import memrepo as mr
 from rentomatic.use_cases import storageroom_use_case as uc
 from rentomatic.serializers import storageroom_serializer as ser
+
+blueprint = Blueprint('storageroom', __name__)
+
+STATUS_CODES = {
+    res.ResponseSuccess.SUCCESS: 200,
+    res.ResponseFailure.RESOURCE_ERROR: 404,
+    res.ResponseFailure.PARAMETERS_ERROR: 400,
+    res.ResponseFailure.SYSTEM_ERROR: 500
+}
 
 storageroom1 = {
     'code': 'f853578c-fc0f-4e65-81b8-566c5dffa35a',
@@ -30,12 +40,18 @@ storageroom3 = {
     'latitude': '51.45994069',
 }
 
-blueprint = Blueprint('storageroom', __name__)
-
 
 @blueprint.route('/storagerooms', methods=['GET'])
 def storageroom():
-    request_object = req.StorageRoomListRequestObject.from_dict({})
+    qrystr_params = {
+        'filters': {},
+    }
+
+    for arg, values in request.args.items():
+        if arg.startswith('filter_'):
+            qrystr_params['filters'][arg.replace('filter_', '')] = values
+
+    request_object = req.StorageRoomListRequestObject.from_dict(qrystr_params)
 
     repo = mr.MemRepo([storageroom1, storageroom2, storageroom3])
     use_case = uc.StorageRoomListUseCase(repo)
@@ -44,4 +60,4 @@ def storageroom():
 
     return Response(json.dumps(response.value, cls=ser.StorageRoomEncoder),
                     mimetype='application/json',
-                    status=200)
+                    status=STATUS_CODES[response.type])
